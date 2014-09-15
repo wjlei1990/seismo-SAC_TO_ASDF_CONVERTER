@@ -1,0 +1,38 @@
+This program is used to convert SAC file to ASDF file using Parallel ASDF I/O API.
+
+Developer: Wenjie Lei(lei@princeton.edu); James Smith(jas11@princeton.edu)
+
+Bug report: email either of the guys listed above. They will be more than happy to see the problems. Another way is report the bug in github issue:( http://github.com/wjlei1990/seismo-SAC_TO_ASDF_CONVERTER/issues)
+
+Dependency:
+Adios-1.5.0
+RESP files are needed if you wish to store the response in the ASDF container.
+These can be obtained from IRIS: http://service.iris.edu/irisws/resp/1/
+
+Run the example:
+1. Copy PAR_FILE.test to PAR_FILE
+    cp PAR_FILE.test PAR_FILE
+2. Compile the code
+    make clean; make
+3. Run the code
+    ./sac_to_asdf
+4. See the result
+    You should be able to see the asdf file: 200912100230A_obs.sac.bp
+    bpls -l 200912100230A_obs.sac.bp
+
+How to use:
+1. set up the "PAR_FILE" in the home(the home of the code) directory, which includes:
+  a) DEBUG: debug mode
+  b) event_name
+  c) DATA_FILE_DIRECTORY
+  d) DATA_FILE_SUFFIX
+  e) STORE_RESPONSE
+
+2. make clean ; make
+
+3. ./sac_to_asdf
+
+Notes:
+1. The code uses Parallel ASDF I/O API. But now the converter only works on one processor. Since now the ASDF I/O API is independent of number of processors, so do not worry about the converted file won't work on parallel way(if you use the same Parellel ASDF I/O API)
+
+2. You can find complete Parallel ASDF I/O API in src/asdf_subs.f90. If you want to use these API, include the file in your source code.

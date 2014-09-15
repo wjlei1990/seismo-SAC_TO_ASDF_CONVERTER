@@ -1,0 +1,17 @@
+TEST
+*.swl
+*.bp
+*.sac
+*.obs
+*.sem
+*.o
+*.mod
+*.swo
+*.swp
+*.swn
+sac_to_asdf
+log
+file_list
+OUTPUT_FILES
+response_file
+DATA/

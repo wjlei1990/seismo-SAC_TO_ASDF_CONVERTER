@@ -1,0 +1,20 @@
+# -------------------------------------------------------------
+#
+# This is the parameter file for the ASDF_CONVERTER package which   
+# is a file format designed for massive data sets on HPC systems.
+#
+# -------------------------------------------------------------
+
+#DEBUG mode
+DEBUG                     = .TRUE.
+
+#event name
+EVENT                     = 201001122153A
+
+#input file 
+SAC_FILE_DIR              = DATA/201001122153A
+SAC_FILE_SUFFIX           = sem
+STORE_RESPONSE            = .false.
+
+#output
+OUTDIR                    = OUTPUT_FILES
