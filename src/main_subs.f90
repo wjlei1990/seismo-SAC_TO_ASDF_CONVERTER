@@ -17,11 +17,9 @@ subroutine read_parameter_file(event_name)
 
   integer, parameter :: IIN = 11
   integer, parameter :: NHEAD = 8
-  integer :: ios
 
-  integer :: idummy,i
+  integer :: idummy
   character(len=28) :: junk
-  character :: dummy
 
   open(unit=IIN,file='PAR_FILE',status='old')
 
@@ -58,7 +56,6 @@ subroutine read_parameter_file(event_name)
 
 2 format(a,a)
 3 format(a,l20)
-4 format(a,F)
 
 end subroutine read_parameter_file
 
@@ -108,10 +105,10 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
 
   character(len=300) :: command
   character(len=200) :: fn, response_fn
-  character(len=100) :: kstnm, kcmpnm, knetwk, khole
+  character(len=20) :: kstnm, kcmpnm, knetwk, khole
 
-  integer :: i, j, loc, dim_info
-  integer :: asdf_index, response_size
+  integer :: i
+  integer :: asdf_index
   logical :: file_exists
 
   !container var
@@ -121,6 +118,7 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
 
   integer :: nerr
   integer :: nerr_files=0
+  integer :: response_length
 
   allocate(character(len=6*3*n_records)::receiver_name)
   allocate(character(len=6*3*n_records)::network)
@@ -161,7 +159,7 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
     endif
 
     !if error reading component name, skip it
-    call getkhv('kcmpnm', kcmpnm, nerr)
+    call getkhv('kcmpnm', kcmpnm(1:10), nerr)
     if(nerr.ne.0)then
       print *,"SAC file contaminated(kcmpnm)...skip this data"
       cycle
@@ -181,18 +179,23 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
     asdf_container%sample_rate(asdf_index) = DELTA
     asdf_container%begin_value(asdf_index) = B
 
-    print *,"(Notes: Error may just mean the slot in SAC header is &
-               not initilized )"
+    print *,"(Notes: Error may just mean the slot in SAC header is not initilized )"
 
     asdf_container%receiver_name_array(asdf_index)=kstnm
     asdf_container%network_array(asdf_index)=knetwk
+    !manually modify kcmpnm here
+    !print *, "comp:", trim(kcmpnm(1:3))
+    kcmpnm="LH"//trim(kcmpnm(3:3))
     asdf_container%component_array(asdf_index)=kcmpnm
+    print *, "comp:", trim(kcmpnm)
 
-    call getkhv('khole', asdf_container%receiver_id_array(asdf_index), nerr)
+    call getkhv('khole', khole, nerr)
     if(nerr.ne.0)then
       print *,"khole missing, set it to null string."
+      asdf_container%receiver_id_array(asdf_index)=""
+    else
+      asdf_container%receiver_id_array(asdf_index)=khole
     endif
-    asdf_container%receiver_id_array(asdf_index)=""
 
     call getnhv('NZYEAR', asdf_container%gmt_year(asdf_index), nerr)
     call getnhv('NZJDAY', asdf_container%gmt_day(asdf_index), nerr)
@@ -222,11 +225,12 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
     call getfhv('BAZ',sta_to_ev_AZ,nerr)
     call getfhv('GCARC',great_circle_arc,nerr)
     call getfhv('DIST',dist,nerr)
+
     if (STORE_RESPONSE) then
       response_fn = trim(SAC_FILE_DIR)//"/RESP."//trim(knetwk)//&
                 "."//trim(kstnm)//".."//trim(kcmpnm)
       inquire(file=trim(response_fn), exist=file_exists)
-      if (file_exists .eq. .false.) then
+      if (.not.file_exists) then
         response_fn = ""
         command = "ls "//trim(SAC_FILE_DIR)//"/RESP*."//trim(knetwk)//"."&
                 //trim(kstnm)//".*."//trim(kcmpnm)//" > response_file"
@@ -236,17 +240,18 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
         close(17)
         2 format(a,a)
         inquire(file=trim(response_fn), exist=file_exists)
-        if (file_exists .eq. .false.) then
+        if (.not.file_exists) then
           print *, "No response found for station ", trim(kstnm), &
             ", network ", trim(knetwk), " and component ", trim(kcmpnm)
           stop
         endif
       endif
-      inquire(file=trim(response_fn), size=asdf_container%responses(asdf_index)%response_length)
-      open(21, file=trim(response_fn), status='old', action='read',&
-          recl=asdf_container%responses(asdf_index)%response_length&
-          ,form='unformatted', access='direct')
-      allocate(character(len=asdf_container%responses(asdf_index)%response_length)::response)
+      inquire(file=trim(response_fn), size=response_length)
+      asdf_container%responses(asdf_index)%response_length=response_length
+      open(21, file=trim(response_fn), status='old', action='read', &
+          recl=response_length, &
+          form='unformatted', access='direct')
+      allocate(character(len=response_length)::response)
       read(21, rec=1) response
       asdf_container%responses(asdf_index)%response_string = trim(response)
       deallocate(response)
