@@ -9,11 +9,11 @@
 DEBUG                     = .TRUE.
 
 #event name
-EVENT                     = 201001122153A
+EVENT                     = 200802101222A
 
 #input file 
-SAC_FILE_DIR              = DATA/201001122153A
-SAC_FILE_SUFFIX           = sem
+SAC_FILE_DIR              = DATA/200802101222A
+SAC_FILE_SUFFIX           = sem.sac
 STORE_RESPONSE            = .false.
 
 #output
