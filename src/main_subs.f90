@@ -108,7 +108,7 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
 
   character(len=300) :: command
   character(len=200) :: fn, response_fn
-  character(len=100) :: kstnm, kcmpnm, knetwk, khole
+  character(len=20) :: kstnm, kcmpnm, knetwk, khole
 
   integer :: i, j, loc, dim_info
   integer :: asdf_index, response_size
@@ -161,7 +161,7 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
     endif
 
     !if error reading component name, skip it
-    call getkhv('kcmpnm', kcmpnm, nerr)
+    call getkhv('kcmpnm', kcmpnm(1:10), nerr)
     if(nerr.ne.0)then
       print *,"SAC file contaminated(kcmpnm)...skip this data"
       cycle
@@ -186,7 +186,11 @@ subroutine copy_sac_to_asdf_data(asdf_container, fn_list, n_records, event_name)
 
     asdf_container%receiver_name_array(asdf_index)=kstnm
     asdf_container%network_array(asdf_index)=knetwk
+    !manually modify kcmpnm here
+    !print *, "comp:", trim(kcmpnm(1:3))
+    kcmpnm="LH"//trim(kcmpnm(3:3))
     asdf_container%component_array(asdf_index)=kcmpnm
+    !print *, "comp:", trim(kcmpnm)
 
     call getkhv('khole', asdf_container%receiver_id_array(asdf_index), nerr)
     if(nerr.ne.0)then

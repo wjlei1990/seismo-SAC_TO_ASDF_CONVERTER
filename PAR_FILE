@@ -9,11 +9,11 @@
 DEBUG                     = .TRUE.
 
 #event name
-EVENT                     = 201001122153A
+EVENT                     = 200503191734A
 
 #input file 
-SAC_FILE_DIR              = DATA/201001122153A
-SAC_FILE_SUFFIX           = sem
+SAC_FILE_DIR              = /tigress/lei/SI_PROCESS/DATA_ALL/200503191734A_27_60
+SAC_FILE_SUFFIX           = obs
 STORE_RESPONSE            = .false.
 
 #output
