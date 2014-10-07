@@ -20,7 +20,7 @@ program sac_to_asdf
     type(asdf_event) :: asdf_container
 
     integer             :: comm, rank, nproc
-    integer             :: ierr, i, adios_err
+    integer             :: ierr, adios_err
     integer             :: n_records
     integer(kind=8)     :: adios_group
 

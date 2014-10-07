@@ -1,18 +1,19 @@
 #!/bin/bash
 
 # Compiler
-FC=mpif90
-FFLAGS=-g
+FC=ftn
+FCFLAGS=-g -Wall
 
 # Directories
 PWD    = $(shell pwd)
 OBJDIR = $(PWD)/obj
 SRCDIR = $(PWD)/src
 
-SACLIBDIR=$(SACHOME)/lib
+#SACLIBDIR=$(SACHOME)/lib
+SACLIBDIR=/ccs/home/lei/bin/sac-101.6a/build/src
 
-ASDF_LIBDIR=/home/lei/bin/asdf_util/lib
-ASDF_INCDIR=/home/lei/bin/asdf_util/include
+ASDF_LIBDIR=/ccs/home/lei/bin/asdf_util/lib
+ASDF_INCDIR=/ccs/home/lei/bin/asdf_util/include
 
 ADIOS_FLIB=$(shell adios_config -lf)
 ADIOS_INC=$(shell adios_config -cf)
@@ -33,10 +34,10 @@ $(MKOBJDIR):
 	mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.f90
-	$(FC) -c -o $@ $< $(FFLAGS) -module $(OBJDIR) -I$(ASDF_INCDIR)
+	$(FC) -c -o $@ $< $(FCFLAGS) -J$(OBJDIR) -I$(ASDF_INCDIR)
 
 $(TARGET) : $(OBJ)
-	$(FC) $(FFLAGS) -o $@ $(OBJ) -L$(SACLIBDIR) -L$(ASDF_LIBDIR) $(LIBS) $(ADIOS_FLIB)
+	$(FC) $(FCFLAGS) -o $@ $(OBJ) -L$(SACLIBDIR) -L$(ASDF_LIBDIR) $(LIBS) $(ADIOS_FLIB)
 
 .PHONY: clean
 
