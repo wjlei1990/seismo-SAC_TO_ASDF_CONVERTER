@@ -2,7 +2,7 @@
 
 # Compiler
 FC=ftn
-FCFLAGS=-g -Wall
+FCFLAGS=-g -Wall -m32
 
 # Directories
 PWD    = $(shell pwd)
